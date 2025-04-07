@@ -2,57 +2,124 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Stock Ticker Widget</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Stock Index Ticker</title>
   <style>
     body {
       margin: 0;
-      background-color: black;
-      color: white;
-      font-family: Arial, sans-serif;
+      padding: 0;
+      font-family: sans-serif;
     }
+
     .ticker-wrapper {
+      background: #000;
+      color: #fff;
       overflow: hidden;
       white-space: nowrap;
       box-sizing: border-box;
-      border-top: 2px solid #444;
-      border-bottom: 2px solid #444;
-      padding: 10px 0;
+      width: 100%;
     }
+
     .ticker {
       display: inline-block;
-      animation: scroll 30s linear infinite;
+      padding-left: 100%;
+      animation: ticker 30s linear infinite;
     }
-    .ticker span {
-      margin: 0 10px;
+
+    .ticker:hover {
+      animation-play-state: paused;
     }
-    .green {
-      color: lime;
+
+    .ticker-item {
+      display: inline-block;
+      padding: 0 1.2rem;
+      font-size: 1rem;
     }
-    .red {
-      color: red;
+
+    @keyframes ticker {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-100%); }
     }
-    @keyframes scroll {
-      from { transform: translateX(100%); }
-      to { transform: translateX(-100%); }
+
+    @media (max-width: 600px) {
+      .ticker-item {
+        font-size: 0.8rem;
+        padding: 0 0.8rem;
+      }
     }
   </style>
 </head>
 <body>
   <div class="ticker-wrapper">
-    <div class="ticker">
-      <span>Sensex: 72,150 <span class="green">(+210)</span></span>
-      <span>Nifty 50: 21,600 <span class="green">(+50)</span></span>
-      <span>FTSE 100: 7,850 <span class="red">(-30)</span></span>
-      <span>DAX 40: 15,700 <span class="green">(+20)</span></span>
-      <span>CAC 40: 7,250 <span class="red">(-12)</span></span>
-      <span>IBEX 35 (Spain): 9,200 <span class="green">(+15)</span></span>
-      <span>FTSE MIB (Italy): 26,400 <span class="green">(+35)</span></span>
-      <span>AEX (Netherlands): 760 <span class="red">(-5)</span></span>
-      <span>SMI (Switzerland): 11,300 <span class="green">(+18)</span></span>
-      <span>BEL 20 (Belgium): 3,900 <span class="red">(-8)</span></span>
-      <span>Nasdaq Nordic: 2,100 <span class="green">(+10)</span></span>
+    <div class="ticker" id="stock-ticker">
+      <div class="ticker-item">Loading...</div>
     </div>
   </div>
+
+  <script>
+    const alphaVantageKey = '0M94SGFF7X1ZSNL6';
+    const marketstackKey = '3370bb80eac15a1a1d88e13bb830c38a';
+
+    const alphaIndices = {
+      'BSE SENSEX': '^BSESN',
+      'NIFTY 50': '^NSEI',
+      'FTSE 100': '^FTSE',
+      'DAX 40': '^GDAXI',
+      'CAC 40': '^FCHI',
+      'SMI': '^SSMI',
+      'AEX': '^AEX'
+    };
+
+    const marketstackIndices = {
+      'IBEX 35': 'MCE:IBC',
+      'FTSE MIB': 'FTSEMIB.MI',
+      'BEL 20': 'EBR:BEL20',
+      'NASDAQ Nordic': 'OMX:C25'
+    };
+
+    const tickerContainer = document.getElementById('stock-ticker');
+
+    async function fetchAlpha(symbol) {
+      const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${alphaVantageKey}`;
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        const price = data['Global Quote']?.['05. price'];
+        return price ? parseFloat(price).toFixed(2) : 'N/A';
+      } catch (err) {
+        return 'N/A';
+      }
+    }
+
+    async function fetchMarketstack(symbol) {
+      const url = `https://api.marketstack.com/v1/eod/latest?access_key=${marketstackKey}&symbols=${symbol}`;
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        const price = data?.data?.[0]?.close;
+        return price ? parseFloat(price).toFixed(2) : 'N/A';
+      } catch (err) {
+        return 'N/A';
+      }
+    }
+
+    async function updateTicker() {
+      let content = '';
+
+      for (const [name, symbol] of Object.entries(alphaIndices)) {
+        const price = await fetchAlpha(symbol);
+        content += `<div class="ticker-item">${name}: ₹${price}</div>`;
+      }
+
+      for (const [name, symbol] of Object.entries(marketstackIndices)) {
+        const price = await fetchMarketstack(symbol);
+        content += `<div class="ticker-item">${name}: €${price}</div>`;
+      }
+
+      tickerContainer.innerHTML = content + content; // Duplicate for smooth loop
+    }
+
+    updateTicker();
+  </script>
 </body>
 </html>
