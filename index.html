@@ -23,7 +23,7 @@
     .ticker {
       display: inline-block;
       padding-left: 100%;
-      animation: ticker 30s linear infinite;
+      animation: ticker 25s linear infinite;
     }
 
     .ticker:hover {
@@ -58,9 +58,8 @@
 
   <script>
     const alphaVantageKey = '0M94SGFF7X1ZSNL6';
-    const marketstackKey = '3370bb80eac15a1a1d88e13bb830c38a';
 
-    const alphaIndices = {
+    const indices = {
       'BSE SENSEX': '^BSESN',
       'NIFTY 50': '^NSEI',
       'FTSE 100': '^FTSE',
@@ -68,13 +67,6 @@
       'CAC 40': '^FCHI',
       'SMI': '^SSMI',
       'AEX': '^AEX'
-    };
-
-    const marketstackIndices = {
-      'IBEX 35': 'MCE:IBC',
-      'FTSE MIB': 'FTSEMIB.MI',
-      'BEL 20': 'EBR:BEL20',
-      'NASDAQ Nordic': 'OMX:C25'
     };
 
     const tickerContainer = document.getElementById('stock-ticker');
@@ -91,29 +83,11 @@
       }
     }
 
-    async function fetchMarketstack(symbol) {
-      const url = `https://api.marketstack.com/v1/eod/latest?access_key=${marketstackKey}&symbols=${symbol}`;
-      try {
-        const res = await fetch(url);
-        const data = await res.json();
-        const price = data?.data?.[0]?.close;
-        return price ? parseFloat(price).toFixed(2) : 'N/A';
-      } catch (err) {
-        return 'N/A';
-      }
-    }
-
     async function updateTicker() {
       let content = '';
-
-      for (const [name, symbol] of Object.entries(alphaIndices)) {
+      for (const [name, symbol] of Object.entries(indices)) {
         const price = await fetchAlpha(symbol);
-        content += `<div class="ticker-item">${name}: ₹${price}</div>`;
-      }
-
-      for (const [name, symbol] of Object.entries(marketstackIndices)) {
-        const price = await fetchMarketstack(symbol);
-        content += `<div class="ticker-item">${name}: €${price}</div>`;
+        content += `<div class="ticker-item">${name}: ${price}</div>`;
       }
 
       tickerContainer.innerHTML = content + content; // Duplicate for smooth loop
