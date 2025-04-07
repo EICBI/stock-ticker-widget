@@ -1,20 +1,58 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stock Ticker Widget</title>
   <style>
-    body { background: black; color: white; margin: 0; font-family: sans-serif; }
-    .ticker { display: flex; gap: 30px; white-space: nowrap; animation: scroll 15s linear infinite; padding: 10px; }
-    @keyframes scroll { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
-    .green { color: lime; } .red { color: red; }
+    body {
+      margin: 0;
+      background-color: black;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+    .ticker-wrapper {
+      overflow: hidden;
+      white-space: nowrap;
+      box-sizing: border-box;
+      border-top: 2px solid #444;
+      border-bottom: 2px solid #444;
+      padding: 10px 0;
+    }
+    .ticker {
+      display: inline-block;
+      animation: scroll 30s linear infinite;
+    }
+    .ticker span {
+      margin: 0 30px;
+    }
+    .green {
+      color: lime;
+    }
+    .red {
+      color: red;
+    }
+    @keyframes scroll {
+      from { transform: translateX(100%); }
+      to { transform: translateX(-100%); }
+    }
   </style>
 </head>
 <body>
-  <div class="ticker">
-    <span>Sensex: 72,150 <span class="green">(+210)</span></span>
-    <span>Nifty 50: 21,600 <span class="green">(+50)</span></span>
-    <span>FTSE 100: 7,850 <span class="red">(-30)</span></span>
-    <span>DAX 40: 15,700 <span class="green">(+20)</span></span>
-    <span>CAC 40: 7,250 <span class="red">(-12)</span></span>
+  <div class="ticker-wrapper">
+    <div class="ticker">
+      <span>Sensex: 72,150 <span class="green">(+210)</span></span>
+      <span>Nifty 50: 21,600 <span class="green">(+50)</span></span>
+      <span>FTSE 100: 7,850 <span class="red">(-30)</span></span>
+      <span>DAX 40: 15,700 <span class="green">(+20)</span></span>
+      <span>CAC 40: 7,250 <span class="red">(-12)</span></span>
+      <span>IBEX 35 (Spain): 9,200 <span class="green">(+15)</span></span>
+      <span>FTSE MIB (Italy): 26,400 <span class="green">(+35)</span></span>
+      <span>AEX (Netherlands): 760 <span class="red">(-5)</span></span>
+      <span>SMI (Switzerland): 11,300 <span class="green">(+18)</span></span>
+      <span>BEL 20 (Belgium): 3,900 <span class="red">(-8)</span></span>
+      <span>Nasdaq Nordic: 2,100 <span class="green">(+10)</span></span>
+    </div>
   </div>
 </body>
 </html>
